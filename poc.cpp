@@ -9,6 +9,7 @@ import voo;
 namespace vinyl {
   enum event {
     START,
+    RESIZE,
     FRAME,
     STOP,
     MAX_EVENT,
@@ -20,16 +21,27 @@ namespace vinyl {
 
 struct app_stuff {
   voo::device_and_queue dq { "poc-vinyl", casein::native_ptr };
-  voo::swapchain_and_stuff sw { dq };
 };
-static hai::uptr<app_stuff> gs {};
+static hai::uptr<app_stuff> gas {};
+
+struct sized_stuff {
+  voo::swapchain_and_stuff sw { gas->dq };
+};
+static hai::uptr<sized_stuff> gss {};
+
+static void frame() {
+}
 
 static struct app_init {
   app_init() {
     using namespace vinyl;
-    on(START, [] { gs.reset(new app_stuff {}); });
-    on(FRAME, [] {});
-    on(STOP,  [] { gs.reset(nullptr); });
+    on(START,  [] { gas.reset(new app_stuff   {}); });
+    on(RESIZE, [] { gss.reset(new sized_stuff {}); });
+    on(FRAME,  &frame);
+    on(STOP,   [] { 
+      gss.reset(nullptr);
+      gas.reset(nullptr);
+    });
   }
 } i;
 
@@ -48,6 +60,9 @@ static void call(vinyl::event e) {
 
 static void run(sith::thread * t) {
   call(vinyl::START);
+
+  // TODO: catch actual resize events
+  call(vinyl::RESIZE);
 
   while (!t->interrupted()) {
     call(vinyl::FRAME);
