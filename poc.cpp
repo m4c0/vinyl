@@ -30,13 +30,14 @@ struct sized_stuff {
 static hai::uptr<sized_stuff> gss {};
 
 static void frame() {
+  if (!gss) gss.reset(new sized_stuff {});
 }
 
 static struct app_init {
   app_init() {
     using namespace vinyl;
-    on(START,  [] { gas.reset(new app_stuff   {}); });
-    on(RESIZE, [] { gss.reset(new sized_stuff {}); });
+    on(START,  [] { gas.reset(new app_stuff {}); });
+    on(RESIZE, [] { gss.reset(nullptr); });
     on(FRAME,  &frame);
     on(STOP,   [] { 
       gss.reset(nullptr);
@@ -58,17 +59,21 @@ static void call(vinyl::event e) {
   if (fn) fn();
 }
 
+static volatile bool g_resized = false;
 static void run(sith::thread * t) {
   call(vinyl::START);
 
-  // TODO: catch actual resize events
-  call(vinyl::RESIZE);
-
   while (!t->interrupted()) {
-    call(vinyl::FRAME);
+    g_resized = false;
+    call(vinyl::RESIZE);
+
+    while (!t->interrupted() && !g_resized) {
+      call(vinyl::FRAME);
+    }
+
+    vee::device_wait_idle();
   }
 
-  vee::device_wait_idle();
   call(vinyl::STOP);
 }
 
@@ -81,6 +86,7 @@ public:
     using namespace casein;
 
     handle(CREATE_WINDOW, [this] { m_guard = sith::run_guard { &m_thr }; });
+    handle(RESIZE_WINDOW, [] { if (!casein::window_live_resize) g_resized = true; });
     handle(QUIT,          [this] { m_guard = {}; });
   }
 } s;
