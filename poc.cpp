@@ -2,6 +2,7 @@
 
 import casein;
 import hai;
+import mtx;
 import silog;
 import sith;
 import voo;
@@ -49,6 +50,10 @@ static struct app_init {
 //
 
 static hai::fn<void> g_callbacks[vinyl::MAX_EVENT];
+static mtx::mutex g_mutex {};
+static mtx::cond g_sus_cond {};
+static volatile bool g_suspended = false;
+static volatile bool g_resized = false;
 
 void vinyl::on(event evt, hai::fn<void> callback) {
   g_callbacks[evt] = callback;
@@ -59,7 +64,6 @@ static void call(vinyl::event e) {
   if (fn) fn();
 }
 
-static volatile bool g_resized = false;
 static void run(sith::thread * t) {
   call(vinyl::START);
 
@@ -68,7 +72,10 @@ static void run(sith::thread * t) {
     call(vinyl::RESIZE);
 
     while (!t->interrupted() && !g_resized) {
-      call(vinyl::FRAME);
+      if (g_suspended) {
+        mtx::lock l { &g_mutex };
+        g_sus_cond.wait(&l);
+      } else call(vinyl::FRAME);
     }
 
     vee::device_wait_idle();
@@ -88,5 +95,12 @@ public:
     handle(CREATE_WINDOW, [this] { m_guard = sith::run_guard { &m_thr }; });
     handle(RESIZE_WINDOW, [] { if (!casein::window_live_resize) g_resized = true; });
     handle(QUIT,          [this] { m_guard = {}; });
+
+    handle(casein::ENTER_BACKGROUND, [] { g_suspended = true; });
+    handle(casein::LEAVE_BACKGROUND, [] {
+      mtx::lock l { &g_mutex };
+      g_suspended = false;
+      g_sus_cond.wake_all();
+    });
   }
 } s;
