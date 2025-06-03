@@ -53,8 +53,8 @@ public:
     handle(RESIZE_WINDOW, [] { if (!casein::window_live_resize) g_resized = true; });
     handle(QUIT,          [this] { m_guard = {}; });
 
-    handle(casein::ENTER_BACKGROUND, [] { g_suspended = true; });
-    handle(casein::LEAVE_BACKGROUND, [] {
+    handle(ENTER_BACKGROUND, [] { g_suspended = true; });
+    handle(LEAVE_BACKGROUND, [] {
       mtx::lock l { &g_mutex };
       g_suspended = false;
       g_sus_cond.wake_all();
