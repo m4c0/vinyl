@@ -22,8 +22,6 @@ static void call(vinyl::event e) {
 }
 
 static void run(sith::thread * t) {
-  call(vinyl::START);
-
   while (!t->interrupted()) {
     g_resized = false;
     call(vinyl::RESIZE);
@@ -49,7 +47,10 @@ public:
   init() {
     using namespace casein;
 
-    handle(CREATE_WINDOW, [this] { m_guard = sith::run_guard { &m_thr }; });
+    handle(CREATE_WINDOW, [this] {
+      call(vinyl::START);
+      m_guard = sith::run_guard { &m_thr };
+    });
     handle(RESIZE_WINDOW, [] { if (!casein::window_live_resize) g_resized = true; });
     handle(QUIT,          [this] { m_guard = {}; });
 
