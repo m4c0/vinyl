@@ -39,6 +39,9 @@ struct app_init {
       gss.reset(nullptr);
       gas.reset(nullptr);
     });
+
+    using namespace casein;
+    handle(KEY_DOWN, K_Q, [] { interrupt(IRQ_QUIT); });
   }
 } i;
 
