@@ -20,13 +20,13 @@ static void frame() {
   if (!gss) gss.reset(new sized_stuff {});
 
   gss->sw.acquire_next_image();
-  gss->sw.queue_one_time_submit(gas->dq.queue(), [&] {
+  gss->sw.queue_one_time_submit([&] {
     gss->sw.cmd_render_pass({
       .command_buffer = gss->sw.command_buffer(),
       .clear_colours { vee::clear_colour(0.1, 0.2, 0.3, 1.0) },
     });
   });
-  gss->sw.queue_present(gas->dq.queue());
+  gss->sw.queue_present();
 }
 
 struct app_init {
