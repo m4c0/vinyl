@@ -37,4 +37,8 @@ export namespace vinyl {
   };
 }
 
+#ifndef LECO_TARGET_WASM
 #pragma leco add_impl impl
+#else
+#pragma leco add_impl wasm
+#endif
