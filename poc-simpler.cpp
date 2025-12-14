@@ -14,8 +14,7 @@ struct sized_stuff {
 };
 
 const int i = [] {
-  v::on_frame() = [] {};
-  v::setup();
+  v::setup([] {});
 
   return 0;
 }();

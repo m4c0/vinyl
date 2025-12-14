@@ -15,9 +15,7 @@ export namespace vinyl {
     static auto & as() { static A * i; return i; };
     static auto & ss() { static S * i; return i; };
 
-    static auto & on_frame() { static void (*i)(); return i; }
-
-    static void setup() {
+    static void setup(hai::fn<void> on_frame) {
       using namespace vinyl;
 
       on(START, [] { as() = new A {}; });
@@ -25,9 +23,9 @@ export namespace vinyl {
         delete ss();
         ss() = nullptr;
       });
-      on(FRAME, [] {
+      on(FRAME, [=] mutable {
         if (!ss()) ss() = new S {};
-        on_frame()();
+        on_frame();
       });
       on(STOP, [] {
         delete ss();
