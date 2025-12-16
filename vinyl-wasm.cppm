@@ -8,6 +8,9 @@ import stubby;
 import sv;
 
 namespace vinyl {
+  export struct base_app_stuff {
+    base_app_stuff(const char * name) {}
+  };
   export struct nearest_texture {
     int id = gelo::create_texture();
 

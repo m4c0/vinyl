@@ -1,10 +1,18 @@
 #pragma leco add_impl impl
 export module vinyl:impl;
+import casein;
 import sv;
 import voo;
 import wagen;
 
 namespace vinyl {
+  export struct base_app_stuff {
+    voo::device_and_queue dq;
+
+    base_app_stuff(const char * name) : dq { name, casein::native_ptr } {
+      casein::window_title = sv::unsafe(name);
+    }
+  };
   export struct nearest_texture {
     vee::descriptor_set_layout dsl = vee::create_descriptor_set_layout({
       vee::dsl_fragment_sampler(),
