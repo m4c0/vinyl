@@ -41,9 +41,9 @@ namespace vinyl {
 
   protected:
     shader() = default;
-    shader(unsigned type, sv name, sv ext) {
+    shader(unsigned type, sv name, sv ext, hai::fn<void> callback) {
       auto filename = jute::fmt<"%s.%s.gles">(name, ext);
-      sires::read(filename, nullptr, [=,this](auto, hai::cstr & gles) {
+      sires::read(filename, nullptr, [=,this](auto, hai::cstr & gles) mutable {
         using namespace gelo;
 
         auto v = gelo::create_shader(type);
@@ -55,6 +55,7 @@ namespace vinyl {
           silog::log(silog::error, "Error compiling shader:\n%s", buf);
         }
         m_id = v;
+        callback();
       });
     }
 
@@ -64,10 +65,10 @@ namespace vinyl {
   };
   export struct vert_shader : shader {
     vert_shader() = default;
-    explicit vert_shader(sv name) : shader { gelo::VERTEX_SHADER, name, "vert" } {}
+    explicit vert_shader(sv name, hai::fn<void> callback) : shader { gelo::VERTEX_SHADER, name, "vert", callback } {}
   };
   export struct frag_shader : shader {
     frag_shader() = default;
-    explicit frag_shader(sv name) : shader { gelo::FRAGMENT_SHADER, name, "frag" } {}
+    explicit frag_shader(sv name, hai::fn<void> callback) : shader { gelo::FRAGMENT_SHADER, name, "frag", callback } {}
   };
 }

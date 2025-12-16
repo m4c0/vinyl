@@ -1,6 +1,7 @@
 #pragma leco add_impl impl
 export module vinyl:impl;
 import casein;
+import hai;
 import jute;
 import sv;
 import voo;
@@ -40,10 +41,10 @@ namespace vinyl {
     [[nodiscard]] explicit operator bool() const { return true; }
   };
 
-  export struct frag_shader : voo::shader {
-    frag_shader(sv name) : shader { jute::fmt<"%s.frag.spv">(name) } {}
+  export struct frag_shader : voo::frag_shader {
+    frag_shader(sv name, hai::fn<void> callback) : voo::frag_shader { jute::fmt<"%s.frag.spv">(name) } { callback(); }
   };
-  export struct vert_shader : voo::shader {
-    vert_shader(sv name) : shader { jute::fmt<"%s.vert.spv">(name) } {}
+  export struct vert_shader : voo::vert_shader {
+    vert_shader(sv name, hai::fn<void> callback) : voo::vert_shader { jute::fmt<"%s.vert.spv">(name) } { callback(); }
   };
 }
