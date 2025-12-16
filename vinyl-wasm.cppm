@@ -2,6 +2,7 @@
 export module vinyl:wasm;
 import gelo;
 import hai;
+import jute;
 import silog;
 import sires;
 import stubby;
@@ -33,5 +34,40 @@ namespace vinyl {
     }
 
     [[nodiscard]] explicit operator bool() const { return id != 0; }
+  };
+
+  class shader {
+    int m_id = 0;
+
+  protected:
+    shader() = default;
+    shader(unsigned type, sv name, sv ext) {
+      auto filename = jute::fmt<"%s.%s.gles">(name, ext);
+      sires::read(filename, nullptr, [=,this](auto, hai::cstr & gles) {
+        using namespace gelo;
+
+        auto v = gelo::create_shader(type);
+        shader_source(v, gles.begin(), gles.size());
+        compile_shader(v);
+        if (!get_shader_parameter_b(v, COMPILE_STATUS)) {
+          char buf[1024] {};
+          get_shader_info_log(v, buf, sizeof(buf) - 1);
+          silog::log(silog::error, "Error compiling shader:\n%s", buf);
+        }
+        m_id = v;
+      });
+    }
+
+  public:
+    constexpr auto id() const { return m_id; }
+    explicit constexpr operator bool() const { return m_id; }
+  };
+  export struct vert_shader : shader {
+    vert_shader() = default;
+    explicit vert_shader(sv name) : shader { gelo::VERTEX_SHADER, name, "vert" } {}
+  };
+  export struct frag_shader : shader {
+    frag_shader() = default;
+    explicit frag_shader(sv name) : shader { gelo::FRAGMENT_SHADER, name, "frag" } {}
   };
 }
