@@ -1,6 +1,12 @@
 export module vinyl;
 import hai;
 
+#ifndef LECO_TARGET_WASM
+export import :impl;
+#else
+export import :wasm;
+#endif
+
 export namespace vinyl {
   enum event {
     START,
@@ -34,9 +40,3 @@ export namespace vinyl {
     }
   };
 }
-
-#ifndef LECO_TARGET_WASM
-#pragma leco add_impl impl
-#else
-#pragma leco add_impl wasm
-#endif
