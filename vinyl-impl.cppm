@@ -1,9 +1,11 @@
 #pragma leco add_impl impl
 export module vinyl:impl;
 import casein;
+import dotz;
 import hai;
 import jute;
 import sv;
+import traits;
 import voo;
 import wagen;
 
@@ -47,4 +49,15 @@ namespace vinyl {
   export struct vert_shader : voo::vert_shader {
     vert_shader(sv name, hai::fn<void> callback) : voo::vert_shader { jute::fmt<"%s.vert.spv">(name) } { callback(); }
   };
+
+  export using vertex_attribute_t = wagen::VkVertexInputAttributeDescription;
+  export template<typename T> auto vertex_attribute(dotz::vec2 (T::*m)) {
+    return vee::vertex_attribute_vec2(0, traits::offset_of(m));
+  }
+  export template<typename T> auto vertex_attribute(dotz::vec4 (T::*m)) {
+    return vee::vertex_attribute_vec4(0, traits::offset_of(m));
+  }
+  export template<typename T> auto vertex_attribute(unsigned (T::*m)) {
+    return vee::vertex_attribute_uint(0, traits::offset_of(m));
+  }
 }

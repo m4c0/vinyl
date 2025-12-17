@@ -1,5 +1,6 @@
 #pragma leco add_impl wasm
 export module vinyl:wasm;
+import dotz;
 import gelo;
 import hai;
 import jute;
@@ -7,6 +8,7 @@ import silog;
 import sires;
 import stubby;
 import sv;
+import traits;
 
 namespace vinyl {
   export struct base_app_stuff {
@@ -71,4 +73,30 @@ namespace vinyl {
     frag_shader() = default;
     explicit frag_shader(sv name, hai::fn<void> callback) : shader { gelo::FRAGMENT_SHADER, name, "frag", callback } {}
   };
+
+  export using vertex_attribute_t = hai::fn<void, unsigned>;
+  export template<typename T> vertex_attribute_t vertex_attribute(dotz::vec2 (T::*m)) {
+    using namespace gelo;
+    return [=](auto p) {
+      enable_vertex_attrib_array(p);
+      vertex_attrib_pointer(p, 2, FLOAT, false, sizeof(T), traits::offset_of(m));
+      vertex_attrib_divisor(p, 1);
+    };
+  }
+  export template<typename T> vertex_attribute_t vertex_attribute(dotz::vec4 (T::*m)) {
+    using namespace gelo;
+    return [=](auto p) {
+      enable_vertex_attrib_array(p);
+      vertex_attrib_pointer(p, 4, FLOAT, false, sizeof(T), traits::offset_of(m));
+      vertex_attrib_divisor(p, 1);
+    };
+  }
+  export template<typename T> vertex_attribute_t vertex_attribute(unsigned (T::*m)) {
+    using namespace gelo;
+    return [=](auto p) {
+      enable_vertex_attrib_array(p);
+      vertex_attrib_i_pointer(p, 1, UNSIGNED_INT, sizeof(T), traits::offset_of(m));
+      vertex_attrib_divisor(p, 1);
+    };
+  }
 }
