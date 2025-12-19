@@ -9,8 +9,8 @@ import vee;
 static hai::fn<void> g_callbacks[vinyl::MAX_EVENT];
 static mtx::mutex g_mutex {};
 static mtx::cond g_sus_cond {};
-static volatile bool g_suspended = false;
-static volatile bool g_resized = false;
+static _Atomic(bool) g_suspended = false;
+static _Atomic(bool) g_resized = false;
 
 void vinyl::on(event evt, hai::fn<void> callback) {
   g_callbacks[evt] = callback;
