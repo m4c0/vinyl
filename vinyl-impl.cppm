@@ -12,4 +12,14 @@ namespace vinyl {
       casein::window_title = sv::unsafe(name);
     }
   };
+
+  export struct base_extent_stuff {
+    vee::render_pass rp; 
+    voo::swapchain_and_stuff sw;
+
+    base_extent_stuff(const base_app_stuff * app) :
+      rp { voo::single_att_render_pass(app->dq) }
+    , sw { app->dq, *rp }
+    {}
+  };
 }
