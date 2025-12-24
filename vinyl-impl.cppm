@@ -21,5 +21,11 @@ namespace vinyl {
       rp { voo::single_att_render_pass(app->dq) }
     , sw { app->dq, *rp }
     {}
+
+    void frame(auto && fn) {
+      sw.acquire_next_image();
+      sw.queue_one_time_submit(fn);
+      sw.queue_present();
+    }
   };
 }
