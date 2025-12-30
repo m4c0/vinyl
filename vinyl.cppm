@@ -39,6 +39,8 @@ export namespace vinyl {
         delete ss();
         delete as();
       });
+
+      init();
     }
   };
 }

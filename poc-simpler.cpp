@@ -13,8 +13,6 @@ struct sized_stuff {
   int extent_scoped_data = v::as()->app_scoped_data + 1;
 };
 
-const int i = [] {
+extern "C" void casein_init() {
   v::setup([] {});
-
-  return 0;
-}();
+}
