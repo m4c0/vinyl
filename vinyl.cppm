@@ -17,6 +17,8 @@ export namespace vinyl {
   };
   void on(event evt, hai::fn<void> callback);
 
+  void init();
+
   template<typename A, typename S> struct v {
     static auto & as() { static A * i; return i; };
     static auto & ss() { static S * i; return i; };

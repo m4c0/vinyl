@@ -39,26 +39,23 @@ static void run(sith::thread * t) {
   call(vinyl::STOP);
 }
 
-static class init {
-  sith::stateless_thread m_thr { run };
-  sith::run_guard m_guard {};
+static sith::stateless_thread g_thr { run };
+static sith::run_guard g_guard {};
 
-public:
-  init() {
-    using namespace casein;
+void vinyl::init() {
+  using namespace casein;
 
-    handle(CREATE_WINDOW, [this] {
-      call(vinyl::START);
-      m_guard = sith::run_guard { &m_thr };
-    });
-    handle(RESIZE_WINDOW, [] { if (!casein::window_live_resize) g_resized = true; });
-    handle(QUIT,          [this] { m_guard = {}; });
+  handle(CREATE_WINDOW, [] {
+    call(vinyl::START);
+    g_guard = sith::run_guard { &g_thr };
+  });
+  handle(RESIZE_WINDOW, [] { if (!casein::window_live_resize) g_resized = true; });
+  handle(QUIT,          [] { g_guard = {}; });
 
-    handle(ENTER_BACKGROUND, [] { g_suspended = true; });
-    handle(LEAVE_BACKGROUND, [] {
-      mtx::lock l { &g_mutex };
-      g_suspended = false;
-      g_sus_cond.wake_all();
-    });
-  }
-} s;
+  handle(ENTER_BACKGROUND, [] { g_suspended = true; });
+  handle(LEAVE_BACKGROUND, [] {
+    mtx::lock l { &g_mutex };
+    g_suspended = false;
+    g_sus_cond.wake_all();
+  });
+}

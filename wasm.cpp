@@ -21,7 +21,7 @@ static void frame(void *) {
   if (g_running) vaselin::request_animation_frame(frame, nullptr);
 }
 
-const int i = [] {
+void vinyl::init() {
   using namespace casein;
 
   handle(CREATE_WINDOW, [] {
@@ -35,6 +35,4 @@ const int i = [] {
   });
 
   vaselin::request_animation_frame(frame, nullptr);
-
-  return 0;
-}();
+}

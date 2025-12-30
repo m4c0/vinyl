@@ -31,21 +31,19 @@ static void frame() {
   gss->sw.queue_present();
 }
 
-struct app_init {
-  app_init() {
-    using namespace vinyl;
-    on(START,  [] { gas.reset(new app_stuff {}); });
-    on(RESIZE, [] { gss.reset(nullptr); });
-    on(FRAME,  &frame);
-    on(STOP,   [] { 
-      gss.reset(nullptr);
-      gas.reset(nullptr);
-    });
+extern "C" void casein_init() {
+  using namespace vinyl;
+  on(START,  [] { gas.reset(new app_stuff {}); });
+  on(RESIZE, [] { gss.reset(nullptr); });
+  on(FRAME,  &frame);
+  on(STOP,   [] { 
+    gss.reset(nullptr);
+    gas.reset(nullptr);
+  });
 
-    using namespace casein;
-    handle(KEY_DOWN, K_Q, [] { interrupt(IRQ_QUIT); });
-  }
-} i;
+  using namespace casein;
+  handle(KEY_DOWN, K_Q, [] { interrupt(IRQ_QUIT); });
 
-//
+  vinyl::init();
+}
 
