@@ -25,7 +25,7 @@ namespace vinyl {
 
     auto clear(dotz::vec4 colour) {
       auto rp = sw.cmd_render_pass({
-        .clear_colours { vee::clear_colour(0, 0, 0, 1) },
+        .clear_colours { vee::clear_colour(colour) },
       });
       auto cb = sw.command_buffer();
       auto ext = sw.extent();
