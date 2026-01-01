@@ -29,7 +29,7 @@ namespace vinyl {
       });
       auto cb = sw.command_buffer();
       auto ext = sw.extent();
-      vee::cmd_set_viewport(cb, ext);
+      vee::cmd_set_viewport_flipped(cb, ext);
       vee::cmd_set_scissor(cb, ext);
       return rp;
     }
