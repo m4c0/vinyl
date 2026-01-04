@@ -6,7 +6,12 @@ import gelo;
 
 namespace vinyl {
   export struct base_app_stuff {
-    base_app_stuff(const char * name) {}
+    base_app_stuff(const char * name) {
+      using namespace casein;
+
+      fullscreen = true;
+      interrupt(IRQ_FULLSCREEN);
+    }
   };
   export struct base_extent_stuff {
     base_extent_stuff(const base_app_stuff * app) {}
