@@ -16,6 +16,11 @@ namespace vinyl {
   export struct base_extent_stuff {
     base_extent_stuff(const base_app_stuff * app) {}
 
+    float aspect() const {
+      auto [w, h] = casein::window_size;
+      return static_cast<float>(w) / static_cast<float>(h);
+    }
+
     int clear(dotz::vec4 colour) {
       using namespace gelo;
       auto [r, g, b, a] = colour;

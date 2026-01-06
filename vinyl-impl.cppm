@@ -23,7 +23,9 @@ namespace vinyl {
     , sw { app->dq, *rp }
     {}
 
-    auto clear(dotz::vec4 colour) {
+    float aspect() const { return sw.aspect(); }
+
+    [[nodiscard]] auto clear(dotz::vec4 colour) {
       auto rp = sw.cmd_render_pass({
         .clear_colours { vee::clear_colour(colour) },
       });
