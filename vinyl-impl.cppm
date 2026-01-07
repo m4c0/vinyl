@@ -16,18 +16,23 @@ namespace vinyl {
 
   export struct base_extent_stuff {
     vee::render_pass rp; 
+    voo::offscreen::depth_buffer depth;
     voo::swapchain_and_stuff sw;
 
     base_extent_stuff(const base_app_stuff * app) :
-      rp { voo::single_att_render_pass(app->dq) }
-    , sw { app->dq, *rp }
+      rp { voo::single_att_depth_render_pass(app->dq) }
+    , depth { app->dq.extent_of() }
+    , sw { app->dq, *rp, depth.image_view() }
     {}
 
     float aspect() const { return sw.aspect(); }
 
     [[nodiscard]] auto clear(dotz::vec4 colour) {
       auto rp = sw.cmd_render_pass({
-        .clear_colours { vee::clear_colour(colour) },
+        .clear_colours { 
+          vee::clear_colour(colour), 
+          vee::clear_depth(1.0),
+        },
       });
       auto cb = sw.command_buffer();
       auto ext = sw.extent();
