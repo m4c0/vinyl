@@ -16,13 +16,13 @@ namespace vinyl {
 
   export struct base_extent_stuff {
     vee::render_pass rp; 
-    voo::offscreen::depth_buffer depth;
+    voo::bound_image depth;
     voo::swapchain_and_stuff sw;
 
     base_extent_stuff(const base_app_stuff * app) :
       rp { voo::single_att_depth_render_pass(app->dq) }
-    , depth { app->dq.extent_of() }
-    , sw { app->dq, *rp, depth.image_view() }
+    , depth { voo::bound_image::create_depth(app->dq.extent_of()) }
+    , sw { app->dq, *rp, *depth.iv }
     {}
 
     float aspect() const { return sw.aspect(); }
